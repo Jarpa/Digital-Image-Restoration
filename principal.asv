@@ -1,0 +1,39 @@
+clear all
+close all
+clc
+I = imread('autumn.tif');
+I = rgb2gray(I);
+img = I;
+mkdir(pathname);
+mkdir(pathname2);
+mkdir(pathname3);
+mkdir(pathname4);
+pathname = 'C:\Users\pcinacap\Desktop\programa\imagenes\diskBlurred/';
+pathname2 = 'C:\Users\pcinacap\Desktop\programa\imagenes\restInverso/';
+pathname3 = 'C:\Users\pcinacap\Desktop\programa\imagenes\restWiener/';
+pathname4 = 'C:\Users\pcinacap\Desktop\programa\imagenes\restLucy/';
+k=1;
+
+for i=1:1:15
+    Radio = i;
+    PSF = fspecial('disk', Radio);
+    blurred = imfilter(I, PSF, 'conv', 'circular');        
+    [wnr1] = Wiener(blurred,PSF);
+    [luc1] = Lucy(blurred,PSF,100);
+    [imgInverso] = Inverso(blurred,Radio,PSF);
+    imwrite(blurred,[pathname, 'DiskBlurred',strcat(num2str(k),'-',num2str(j)),'.tif']);
+    imwrite(wnr1,[pathname3, 'Wiener',strcat(num2str(k),'-',num2str(j)),'.tif']);
+    imwrite(luc1,[pathname4, 'Lucy',strcat(num2str(k),'-',num2str(j)),'.tif']);
+    imwrite(imgInverso,[pathname2, 'Inverso',strcat(num2str(k),'-',num2str(j)),'.tif']);
+        
+    quality1 = imageQualityIndex(double(I), double(blurred));
+    quality2 = imageQualityIndex(double(I), double(wnr1));
+    quality3 = imageQualityIndex(double(I), double(luc1));
+    quality4 = imageQualityIndex(double(I), double(imgInverso));
+        
+    Emb(k,1) = quality1;
+    ResWnr(k,1) = quality2;
+    ResLucy(k,1) = quality3;
+    ResInv(k,1) = quality4;
+    k=k+1;
+end
